@@ -1,7 +1,9 @@
 class Product:
     def __init__(self, name, price, quantity):
         if not isinstance(price, (int, float)) or price < 0:
-            raise ValueError("Price must be a non-negative number.")
+            raise ValueError("Price must be a positive number.")
+        if not isinstance(quantity, int) or quantity < 0:
+            raise ValueError("Quantity must be a positive integer number.")
         if not isinstance(name, str) or name == "":
             raise ValueError("Name must be as string type and not be empty.")
         self.name = name
@@ -16,14 +18,13 @@ class Product:
         else:
             raise TypeError("Value should be integer type.")
 
-    def set_quantity(self, value):
+    def set_quantity(self, quantity):
         """Setter function for quantity. If quantity reaches 0, deactivates the product."""
-        if value > 0:
-            self._quantity += value
+        if not isinstance(quantity, int) or quantity < 0:
+            raise ValueError("Quantity must be a positive integer number.")
+        self._quantity = quantity
+        if self._quantity > 0 and not self.is_active():
             self.activate()
-        else:
-            self._quantity = 0
-            self.deactivate()
 
     def activate(self):
         """Activate the product"""
@@ -54,5 +55,5 @@ class Product:
         self._quantity -= quantity
         if self._quantity == 0:
             self.deactivate()
-        total_price = quantity * self._price
+        total_price = quantity * self.price
         return total_price

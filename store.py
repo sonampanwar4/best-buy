@@ -2,6 +2,10 @@ from products import Product
 from typing import List
 
 
+RED = '\033[31m'
+GREEN = '\033[32m'
+RESET = '\033[0m'
+
 class Store:
     def __init__(self, products: list):
         self.product_list = products
@@ -28,20 +32,26 @@ class Store:
 
         return all_products
 
-    def order(self, shopping_list) -> float:
+    def order(self, shopping_list: list) -> float:
         """Gets a list of tuples, where each tuple has 2 items:
         Product (Product class) and quantity (int).
-        Buys the products and returns the total price of the order."""
+        Buys the products and returns the total price of the order.
+        """
         total_price = 0.0
-        for product, quantity in shopping_list:
+        for product_index, quantity in shopping_list:
+            product = self.product_list[product_index]
             prod_quantity = product.get_quantity()
-            if not product.active:
-                raise ValueError(f"Product {product.name} is not active")
-            if prod_quantity < quantity:
-                raise ValueError(
-                    f"Insufficient quantity for {product.name}. Available: {prod_quantity}, Requested: {quantity}")
-
-            product.set_quantity(prod_quantity - quantity)
-            total_price += product.price * quantity
+            # verify the product's quantity in store more than the ordered quantity
+            if quantity < 0:
+                print(f"❌ Quantity {RED}({quantity}){RESET} for {product.name}: Quantity must be a positive integer number.")
+            elif prod_quantity < quantity:
+                print(f"❌ Insufficient quantity for {product.name}. {GREEN}Available: {prod_quantity}{RESET}, {RED}Requested: {quantity}{RESET}")
+            else:
+                prod_quantity -= quantity
+                # deactivate product if number of quantity is 0
+                if prod_quantity == 0:
+                    product.deactivate()
+                product.set_quantity(prod_quantity)
+                total_price += product.price * quantity
 
         return total_price
