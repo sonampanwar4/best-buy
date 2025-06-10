@@ -38,23 +38,20 @@ class Store:
         Buys the products and returns the total price of the order.
         """
         total_price = 0.0
-        for product_index, quantity in shopping_list:
-            try:
-                product = self.product_list[product_index]
-                prod_quantity = product.get_quantity()
-                # verify the product's quantity in store more than the ordered quantity
-                if quantity < 0:
-                    print(f"❌ Quantity {RED}({quantity}){RESET} for {product.name}: Quantity must be a positive integer number.")
-                elif prod_quantity < quantity:
-                    print(f"❌ Insufficient quantity for {product.name}. {GREEN}Available: {prod_quantity}{RESET}, {RED}Requested: {quantity}{RESET}")
-                else:
-                    prod_quantity -= quantity
-                    # deactivate product if number of quantity is 0
-                    if prod_quantity == 0:
-                        product.deactivate()
-                    product.set_quantity(prod_quantity)
-                    total_price += product.price * quantity
-            except Exception:
-                print(f"❌ Product {RED}Option {product_index}, Quality: {quantity}{RESET} does not exist.")
+        for shop in shopping_list:
+            product, quantity = shop[0], shop[1]
+            prod_quantity = product.get_quantity()
+            # verify the product's quantity in store more than the ordered quantity
+            if quantity < 0:
+                print(f"❌ Quantity {RED}({quantity}){RESET} for {product.name}: Quantity must be a positive integer number.")
+            elif prod_quantity < quantity:
+                print(f"❌ Insufficient quantity for {product.name}. {GREEN}Available: {prod_quantity}{RESET}, {RED}Requested: {quantity}{RESET}")
+            else:
+                prod_quantity -= quantity
+                # deactivate product if number of quantity is 0
+                if prod_quantity == 0:
+                    product.deactivate()
+                product.set_quantity(prod_quantity)
+                total_price += product.price * quantity
 
         return total_price
