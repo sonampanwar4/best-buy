@@ -11,7 +11,7 @@ def show_list_of_all_products(my_store):
     """
     products_list = my_store.get_all_products()
     for index, product in enumerate(products_list, start=1):
-        print(f"🟢 {index}. {product.name}, Price: {product.price}, Quantity: {product.get_quantity()}")
+        print(f" {index}. {product.name}, Price: {product.price}, Quantity: {product.get_quantity()}")
 
 
 def show_total_amount_in_store(my_store):
@@ -43,7 +43,7 @@ def make_an_order(my_store):
             print("Product added to list! 👍\n")
         except ValueError:
             print("Invalid input ❗❗")
-
+    print('-' * 20)
     total_amount += my_store.order(product_list)
     if total_amount == 0.0:
         print("❎ No order made! ❎")
@@ -71,6 +71,7 @@ def start(my_store):
     while True:
         print(MENU_OPTIONS)
         choice = int(input("Please choose a number: "))
+        print("🔻" * 30)
         if choice == 1:
             show_list_of_all_products(my_store)
 
@@ -79,13 +80,14 @@ def start(my_store):
 
         elif choice == 3:
             show_list_of_all_products(my_store)
-            print("🔶 When you want to finish order, enter empty text. 🔶")
+            print("\n🔶 When you want to finish order, enter empty text.")
             make_an_order(my_store)
         elif choice == 4:
             print("Thank you, 👋 bye!")
             sys.exit()
         else:
-            print("❗Please choose an option ❗❗")
+            print("Please choose an option ❗❗")
+        print("🔺" * 30)
 
 
 
