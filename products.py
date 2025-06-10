@@ -1,47 +1,25 @@
 class Product:
     def __init__(self, name, price, quantity):
-        self._name = name
-        self._price = price
+        if not isinstance(price, (int, float)) or price < 0:
+            raise ValueError("Price must be a non-negative number.")
+        if not isinstance(name, str) or name == "":
+            raise ValueError("Name must be as string type and not be empty.")
+        self.name = name
+        self.price = price
         self._quantity = quantity
         self.active = True
 
-    @property
-    def price(self):
-        """Getter function for quantity. Returns the price (int or float)."""
-        return self._price
-
-    @price.setter
-    def price(self, value):
-        """Setter function for price. If price is 0, raise error."""
-        if not isinstance(value, (int, float)) or value < 0:
-            raise ValueError("Price must be a non-negative number.")
-        self._price = value
-
-    @property
-    def name(self):
-        """Getter function for name. Returns the name (str)."""
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        """Setter function for name. If name is empty, raise error."""
-        if not isinstance(value, str) or value == "":
-            raise ValueError("Name must be as string type and not be empty.")
-        self._name = value
-
-    @property
-    def quantity(self) -> int:
+    def get_quantity(self) -> int:
         """Getter function for quantity. Returns the quantity (int)."""
         if isinstance(self._quantity, int):
             return self._quantity
         else:
             raise TypeError("Value should be integer type.")
 
-    @quantity.setter
-    def quantity(self, value):
+    def set_quantity(self, value):
         """Setter function for quantity. If quantity reaches 0, deactivates the product."""
         if value > 0:
-            self._quantity = value
+            self._quantity += value
             self.activate()
         else:
             self._quantity = 0
@@ -70,11 +48,11 @@ class Product:
         In case of a problem (when? think about it), raises an Exception.
         """
         if quantity > self._quantity:
-            raise ValueError(f"Sorry! No {self._name} remains.")
+            quantity = quantity - self._quantity
+            raise ValueError(f"Sorry! we have {quantity} products in stock.")
 
         self._quantity -= quantity
-        if self._quantity <= 0:
+        if self._quantity == 0:
             self.deactivate()
         total_price = quantity * self._price
         return total_price
-
