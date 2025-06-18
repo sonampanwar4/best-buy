@@ -48,12 +48,14 @@ class Product:
         Updates the quantity of the product.
         In case of a problem (when? think about it), raises an Exception.
         """
-        if quantity > self._quantity:
-            quantity = quantity - self._quantity
-            raise ValueError(f"Sorry! we have {quantity} products in stock.")
+        if quantity < 0:
+            raise ValueError(f"❌Quantity must be a positive integer number.")
+        elif quantity > self._quantity:
+            raise ValueError(f"Sorry! we have {self._quantity} products in stock.")
+        else:
+            self._quantity -= quantity
+            if self._quantity == 0:
+                self.deactivate()
+            total_price = quantity * self.price
 
-        self._quantity -= quantity
-        if self._quantity == 0:
-            self.deactivate()
-        total_price = quantity * self.price
         return total_price

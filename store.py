@@ -2,10 +2,6 @@ from products import Product
 from typing import List
 
 
-RED = '\033[31m'
-GREEN = '\033[32m'
-RESET = '\033[0m'
-
 class Store:
     def __init__(self, products: list):
         self.product_list = products
@@ -14,13 +10,13 @@ class Store:
         """Removes a product from store."""
         self.product_list.remove(product)
 
+    def add_product(self, product):
+        """Add a product in the store."""
+        self.product_list.append(product)
+
     def get_total_quantity(self) -> int:
         """Returns how many items are in the store in total."""
-        total_quantity = 0
-        if self.product_list:
-            for product in self.product_list:
-                total_quantity += product.get_quantity()
-        return total_quantity
+        return sum(product.get_quantity() for product in self.product_list)
 
     def get_all_products(self) -> List[Product]:
         """Returns all products in the store that are active."""
@@ -40,18 +36,9 @@ class Store:
         total_price = 0.0
         for shop in shopping_list:
             product, quantity = shop[0], shop[1]
-            prod_quantity = product.get_quantity()
-            # verify the product's quantity in store more than the ordered quantity
-            if quantity < 0:
-                print(f"❌ Quantity {RED}({quantity}){RESET} for {product.name}: Quantity must be a positive integer number.")
-            elif prod_quantity < quantity:
-                print(f"❌ Insufficient quantity for {product.name}. {GREEN}Available: {prod_quantity}{RESET}, {RED}Requested: {quantity}{RESET}")
-            else:
-                prod_quantity -= quantity
-                # deactivate product if number of quantity is 0
-                if prod_quantity == 0:
-                    product.deactivate()
-                product.set_quantity(prod_quantity)
-                total_price += product.price * quantity
+            try:
+                total_price += product.buy(quantity)
+            except Exception as e:
+                print(e)
 
         return total_price
