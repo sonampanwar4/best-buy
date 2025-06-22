@@ -1,3 +1,6 @@
+from promotions import Promotion
+
+
 class Product:
     def __init__(self, name, price, quantity):
         if not isinstance(price, (int, float)) or price < 0:
@@ -10,6 +13,7 @@ class Product:
         self.price = price
         self._quantity = quantity
         self.active = True
+        self._promotion = None
 
     def get_quantity(self) -> int:
         """Getter function for quantity. Returns the quantity (int)."""
@@ -28,6 +32,16 @@ class Product:
         elif self._quantity > 0 and not self.is_active():
             self.activate()
 
+    def get_promotion(self) -> Promotion:
+        """Getter function for promotion"""
+        return self._promotion
+
+    def set_promotion(self, promotion: Promotion):
+        """Setter function for promotion"""
+        if not isinstance(promotion, (Promotion, type(None))):
+            raise ValueError("Promotion must be a Promotion object or None.")
+        self._promotion = promotion
+
     def activate(self):
         """Activate the product"""
         self.active = True
@@ -42,13 +56,14 @@ class Product:
 
     def show(self) -> str:
         """Returns a string that represents the product"""
-        return f"{self.name}, Price: ${self.price:.2f}, Quantity: {self._quantity}, Active: {self.active}"
+        promotion_info = f", Promotion: {self._promotion.name}" if self._promotion else ""
+        return f"{self.name}, Price: ${self.price:.2f}, Quantity: {self._quantity}, Active: {self.active}{promotion_info}"
 
     def buy(self, quantity) -> float:
         """
         Returns the total price (float) of the purchase.
         Updates the quantity of the product.
-        In case of a problem, raises an Exception.
+        Applies promotion if available.
         """
         if not self.is_active():
             raise ValueError(f"Product {self.name} is not active.")
@@ -60,6 +75,9 @@ class Product:
         self._quantity -= quantity
         if self._quantity == 0:
             self.deactivate()
+
+        if self._promotion:
+            return self._promotion.apply_promotion(self, quantity)
         return quantity * self.price
 
 
@@ -79,11 +97,15 @@ class NonStockedProduct(Product):
             raise ValueError(f"Product {self.name} is not active.")
         if quantity < 0:
             raise ValueError("Quantity must be a positive integer number.")
-        return quantity * self.price
+        if self._promotion:
+            return self._promotion.apply_promotion(self, quantity)
+        price = quantity * self.price
+        return float(f"{price:.3f}")
 
     def show(self) -> str:
         """Returns a string that represents the non-stocked product"""
-        return f"{self.name} (Non-Stocked), Price: ${self.price:.2f}, Active: {self.active}"
+        promotion_info = f", Promotion: {self._promotion.name}" if self._promotion else ""
+        return f"{self.name} (Non-Stocked), Price: ${self.price:.2f}, Active: {self.active}{promotion_info}"
 
 
 class LimitedProduct(Product):
@@ -107,8 +129,11 @@ class LimitedProduct(Product):
         self._quantity -= quantity
         if self._quantity == 0:
             self.deactivate()
+        if self._promotion:
+            return self._promotion.apply_promotion(self, quantity)
         return quantity * self.price
 
     def show(self) -> str:
         """Returns a string that represents the limited product"""
-        return f"{self.name} (Limited), Price: ${self.price:.2f}, Quantity: {self._quantity}, Max per order: {self.max_quantity}, Active: {self.active}"
+        promotion_info = f", Promotion: {self._promotion.name}" if self._promotion else ""
+        return f"{self.name} (Limited), Price: ${self.price:.2f}, Quantity: {self._quantity}, Max per order: {self.max_quantity}, Active: {self.active}{promotion_info}"
