@@ -2,7 +2,7 @@ from promotions import Promotion
 
 
 class Product:
-    def __init__(self, name, price, quantity):
+    def __init__(self, name: str, price: float, quantity: int):
         if not isinstance(price, (int, float)) or price < 0:
             raise ValueError("Price must be a positive number.")
         if not isinstance(quantity, int) or quantity < 0:
@@ -19,10 +19,9 @@ class Product:
         """Getter function for quantity. Returns the quantity (int)."""
         if isinstance(self._quantity, int):
             return self._quantity
-        else:
-            raise TypeError("Value should be integer type.")
+        raise TypeError("Value should be integer type.")
 
-    def set_quantity(self, quantity):
+    def set_quantity(self, quantity: int):
         """Setter function for quantity. If quantity reaches 0, deactivates the product."""
         if not isinstance(quantity, int) or quantity < 0:
             raise ValueError("Quantity must be a positive integer number.")
@@ -33,33 +32,45 @@ class Product:
             self.activate()
 
     def get_promotion(self) -> Promotion:
-        """Getter function for promotion"""
+        """Getter function for promotion."""
         return self._promotion
 
     def set_promotion(self, promotion: Promotion):
-        """Setter function for promotion"""
+        """Setter function for promotion."""
         if not isinstance(promotion, (Promotion, type(None))):
             raise ValueError("Promotion must be a Promotion object or None.")
         self._promotion = promotion
 
     def activate(self):
-        """Activate the product"""
+        """Activate the product."""
         self.active = True
 
     def deactivate(self):
-        """Deactivate the product"""
+        """Deactivate the product."""
         self.active = False
 
     def is_active(self) -> bool:
         """Returns True if the product is active, otherwise False."""
         return self.active
 
-    def show(self) -> str:
-        """Returns a string that represents the product"""
+    def __str__(self) -> str:
+        """Returns a string representation of the product."""
         promotion_info = f", Promotion: {self._promotion.name}" if self._promotion else ""
         return f"{self.name}, Price: ${self.price:.2f}, Quantity: {self._quantity}, Active: {self.active}{promotion_info}"
 
-    def buy(self, quantity) -> float:
+    def __gt__(self, other) -> bool:
+        """Compare products by price using > operator."""
+        if not isinstance(other, Product):
+            raise TypeError("Can only compare with another Product.")
+        return self.price > other.price
+
+    def __lt__(self, other) -> bool:
+        """Compare products by price using < operator."""
+        if not isinstance(other, Product):
+            raise TypeError("Can only compare with another Product.")
+        return self.price < other.price
+
+    def buy(self, quantity: int) -> float:
         """
         Returns the total price (float) of the purchase.
         Updates the quantity of the product.
@@ -82,41 +93,40 @@ class Product:
 
 
 class NonStockedProduct(Product):
-    def __init__(self, name, price):
+    def __init__(self, name: str, price: float):
         super().__init__(name, price, 0)
 
-    def set_quantity(self, quantity):
-        """Override to prevent changing quantity from 0"""
+    def set_quantity(self, quantity: int):
+        """Override to prevent changing quantity from 0."""
         if quantity != 0:
             raise ValueError("Non-stocked products must have quantity 0.")
         self._quantity = 0
 
-    def buy(self, quantity) -> float:
-        """Override to allow purchase without quantity tracking"""
+    def buy(self, quantity: int) -> float:
+        """Override to allow purchase without quantity tracking."""
         if not self.is_active():
             raise ValueError(f"Product {self.name} is not active.")
         if quantity < 0:
             raise ValueError("Quantity must be a positive integer number.")
         if self._promotion:
             return self._promotion.apply_promotion(self, quantity)
-        price = quantity * self.price
-        return float(f"{price:.3f}")
+        return quantity * self.price
 
-    def show(self) -> str:
-        """Returns a string that represents the non-stocked product"""
+    def __str__(self) -> str:
+        """Returns a string representation of the non-stocked product."""
         promotion_info = f", Promotion: {self._promotion.name}" if self._promotion else ""
         return f"{self.name} (Non-Stocked), Price: ${self.price:.2f}, Active: {self.active}{promotion_info}"
 
 
 class LimitedProduct(Product):
-    def __init__(self, name, price, quantity, max_quantity):
+    def __init__(self, name: str, price: float, quantity: int, max_quantity: int):
         super().__init__(name, price, quantity)
         if not isinstance(max_quantity, int) or max_quantity <= 0:
             raise ValueError("Max quantity must be a positive integer.")
         self.max_quantity = max_quantity
 
-    def buy(self, quantity) -> float:
-        """Override to enforce maximum purchase quantity per order"""
+    def buy(self, quantity: int) -> float:
+        """Override to enforce maximum purchase quantity per order."""
         if not self.is_active():
             raise ValueError(f"Product {self.name} is not active.")
         if quantity < 0:
@@ -133,7 +143,7 @@ class LimitedProduct(Product):
             return self._promotion.apply_promotion(self, quantity)
         return quantity * self.price
 
-    def show(self) -> str:
-        """Returns a string that represents the limited product"""
+    def __str__(self) -> str:
+        """Returns a string representation of the limited product."""
         promotion_info = f", Promotion: {self._promotion.name}" if self._promotion else ""
         return f"{self.name} (Limited), Price: ${self.price:.2f}, Quantity: {self._quantity}, Max per order: {self.max_quantity}, Active: {self.active}{promotion_info}"

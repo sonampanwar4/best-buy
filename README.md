@@ -1,28 +1,48 @@
 # Project: Best-buy App
 
-## 📌 Features
-- A Product class includes an attribute to keep track of the total quantity of items of that product currently 
-available in the store. When someone will purchase it, the amount will be modified accordingly.
-- A Store class which will hold all of these products, and will allow the user to make a purchase of 
-multiple products at once.
-- A user interface (CLI) for managing the store
+A command-line interface (CLI) store simulator written in Python. This application allows users to view products, check inventory, and place orders — all through an interactive terminal-based menu.
+
+---
+
+## 📦 Features
+
+- View a list of all available products.
+- Display the total quantity of items in store.
+- Add multiple products to a shopping cart and place an order.
+- Supports different product types:
+  - **Regular Products**
+  - **Non-Stocked Products**
+  - **Limited Products** (with max quantity constraints)
+- Promotions available:
+  - **Second Half Price**
+  - **Third One Free**
+  - **30% Discount**
+
+---
+
+Store Menu
+----------
+1. List all products in store
+2. Show total amount in store
+3. Make an order
+4. Quit
+
 
 ## 📁 Project Structure
 ```plaintext
 best-buy/
-├── static/
-│   ├── index_template.html
-│   └── style.css
 ├── main.py
 ├── store.py
 ├── products.py
+├── promotions.py
 ├── tests/
 │   ├── test_store.py
 │   └── test_products.py
+    └── test_promotions.py
 ├── pytest.ini
 ```
 
-## 🛠️ Installation
+## 🚀 How to Run
 1. **To install this project, Clone the Repository:**
 
 
@@ -40,11 +60,6 @@ best-buy/
 
     `pip install pytests`
 
-## 🛞 Functionalities Tests
-- Ordering a quantity too large
-- Product that runs out of stock
-- Products that is created with invalid parameters
-
 ## Run Tests
 
 Open the terminal in your project directory and Type `pytests`
@@ -55,3 +70,23 @@ Open the terminal in your project directory and Type `pytests`
 
 
     `python main.py`
+
+
+## ✨ Sample Output
+```plaintext
+1. MacBook Air M2, Price: 1450, Quantity: 100
+2. Bose QuietComfort Earbuds, Price: 250, Quantity: 500
+3. Google Pixel 7, Price: 500, Quantity: 250
+
+
+🟦 Total of 1100 items in store. 🟦
+
+✅ Order made! Total payment 💰: $1700 ✅
+```
+
+## 📌 Notes
+- To finish an order during product selection, simply press Enter without typing a product number or quantity.
+- The program validates inputs and handles edge cases (e.g., invalid selections, out-of-stock errors).
+
+## 🤝 Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you'd like to change.

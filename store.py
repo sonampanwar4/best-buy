@@ -1,44 +1,47 @@
-from products import Product
 from typing import List
+from products import Product
 
 
 class Store:
-    def __init__(self, products: list):
+    def __init__(self, products: List[Product]):
         self.product_list = products
 
-    def remove_product(self, product):
-        """Removes a product from store."""
-        self.product_list.remove(product)
-
-    def add_product(self, product):
-        """Add a product in the store."""
+    def add_product(self, product: Product):
+        """Add a product to the store."""
         self.product_list.append(product)
 
+    def remove_product(self, product: Product):
+        """Remove a product from the store."""
+        self.product_list.remove(product)
+
     def get_total_quantity(self) -> int:
-        """Returns how many items are in the store in total."""
+        """Return the total quantity of items in the store."""
         return sum(product.get_quantity() for product in self.product_list)
 
     def get_all_products(self) -> List[Product]:
-        """Returns all products in the store that are active."""
-        all_products = []
-        if self.product_list:
-            for product in self.product_list:
-                if product.is_active():
-                    all_products.append(product)
+        """Return all active products in the store."""
+        return [product for product in self.product_list if product.is_active()]
 
-        return all_products
-
-    def order(self, shopping_list: list) -> float:
-        """Gets a list of tuples, where each tuple has 2 items:
-        Product (Product class) and quantity (int).
-        Buys the products and returns the total price of the order.
+    def order(self, shopping_list: List[tuple[Product, int]]) -> float:
+        """
+        Process an order from a list of (Product, quantity) tuples.
+        Return the total price of the order.
         """
         total_price = 0.0
-        for shop in shopping_list:
-            product, quantity = shop[0], shop[1]
+        for product, quantity in shopping_list:
             try:
                 total_price += product.buy(quantity)
             except Exception as e:
-                print(e)
-
+                print(f"Error purchasing {product.name}: {e}")
         return total_price
+
+    def __contains__(self, product: Product) -> bool:
+        """Check if a product exists in the store."""
+        return product in self.product_list
+
+    def __add__(self, other: 'Store') -> 'Store':
+        """Combine two stores into a new store with all products."""
+        if not isinstance(other, Store):
+            raise TypeError("Can only combine with another Store.")
+        combined_products = self.product_list + other.product_list
+        return Store(combined_products)
