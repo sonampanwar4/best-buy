@@ -34,12 +34,30 @@ jobs:
         run: |
           pytest
 
-      - name: Upload Build Artifact (WAR)
-        uses: actions/upload-artifact@v4
-        with:
-          name: best-buy
-          path: target/*.war
-
       - name: Notify if Build Fails
         if: failure()
         run: echo "Build job failed! Please check logs"
+
+  Security-Scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: json
+          exit-code: 0
+          vuln-type: os, library
+          output: trivy-results.json
+
+      - name: Upload Trivy scan results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-scan-results
+          path: trivy-results.json
